@@ -6,8 +6,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,34 +21,10 @@ public class FilmController {
      * Список фильмов
      */
     private final Map<Long, Film> films = new HashMap<>();
-    /**
-     * Дата самого раннего фильма
-     */
-    private static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895,12,28);
-    /**
-     * Формат даты
-     */
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");;
 
-    /** Проверки для фильма
-     * @param film объект для проверки
-     */
-    private void filmChecks(Film film) {
-        if (film.getName() == null || film.getName().isBlank()) {
-            throw new ValidationException("Название не может быть пустым");
-        }
-        if (film.getDescription().length() > 200) {
-            throw new ValidationException("Длина описания должна быть максимум 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
-            throw new ValidationException("Дата релиза должна быть не ранее " + MIN_RELEASE_DATE.format(dtf));
-        }
-        if (film.getDuration() < 1 ) {
-            throw new ValidationException("Продолжительность фильма должна быть положительным числом");
-        }
-    }
-
-    /** Вспомогательный метод для генерации идентификатора фильма
+    /**
+     * Вспомогательный метод для генерации идентификатора фильма
+     *
      * @return новый идентификатор
      */
     private long getNextFilmId() {
@@ -62,25 +36,29 @@ public class FilmController {
         return ++currentFilmId;
     }
 
-    /** Эндпоинт на добавление фильма
+    /**
+     * Эндпоинт на добавление фильма
+     *
      * @param newFilm новый фильм
      * @return объект созданного фильма
      */
     @PostMapping
     public Film add(@RequestBody Film newFilm) {
         try {
-            filmChecks(newFilm);
+            Film.filmChecks(newFilm);
             newFilm.setId(getNextFilmId());
             films.put(newFilm.getId(), newFilm);
             log.info("Фильм {} успешно добавлен.", newFilm.getName());
             return newFilm;
         } catch (ValidationException e) {
             log.warn(e.getMessage());
-            return null;
+            throw e;
         }
     }
 
-    /** Эндпоинт на обновление фильма
+    /**
+     * Эндпоинт на обновление фильма
+     *
      * @param film новые данные для обновления
      * @return объект обновленного фильма
      */
@@ -90,7 +68,7 @@ public class FilmController {
             if (film.getId() == null) {
                 throw new ValidationException("Не указан идентификатор фильма");
             }
-            filmChecks(film);
+            Film.filmChecks(film);
             if (films.containsKey(film.getId())) {
                 Film oldFilm = films.get(film.getId());
                 oldFilm.setName(film.getName());
@@ -103,11 +81,13 @@ public class FilmController {
             throw new NotFoundException("Не найден фильм с идентификатором " + film.getId());
         } catch (ValidationException | NotFoundException e) {
             log.warn(e.getMessage());
-            return null;
+            throw e;
         }
     }
 
-    /** Эндпоинт получения списка всех фильмов
+    /**
+     * Эндпоинт получения списка всех фильмов
+     *
      * @return список всех фильмов
      */
     @GetMapping
