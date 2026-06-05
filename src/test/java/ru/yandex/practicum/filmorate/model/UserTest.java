@@ -17,7 +17,9 @@ public class UserTest {
                         .name("Sam")
                         .birthday(LocalDate.of(2002,5,19))
                         .build();
-        assertDoesNotThrow(() -> {User.userChecks(testUser);});
+        assertDoesNotThrow(() -> {
+            User.userChecks(testUser);
+        });
     }
 
     @Test
