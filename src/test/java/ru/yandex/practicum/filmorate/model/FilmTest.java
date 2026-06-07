@@ -4,8 +4,6 @@ import com.google.gson.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
