@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -43,13 +44,20 @@ public class UserController {
      * @return объект созданного пользователя
      */
     @PostMapping
-    public User add(@RequestBody User newUser) {
+    public User add(@Valid @RequestBody User newUser) {
+        return addNewUser(newUser);
+    }
+
+    /** Метод добавления нового пользователя
+     * @param newUser данные нового пользователя
+     * @return объект с добавленным пользователем
+     */
+    private User addNewUser(User newUser) {
         try {
-            User user = User.userChecks(newUser);
-            user.setId(getNextUserId());
-            users.put(newUser.getId(), user);
-            log.info("Пользователь {} успешно добавлен.", user.getName());
-            return user;
+            newUser.setId(getNextUserId());
+            users.put(newUser.getId(), newUser);
+            log.info("Пользователь {} успешно добавлен.", newUser.getName());
+            return newUser;
         } catch (ValidationException e) {
             log.warn(e.getMessage());
             throw e;
@@ -63,12 +71,19 @@ public class UserController {
      * @return объект обновленного о пользователя
      */
     @PutMapping
-    public User update(@RequestBody User user) {
+    public User update(@Valid @RequestBody User user) {
+        return updateUser(user);
+    }
+
+    /** Метод обновления данных о пользователе
+     * @param user данные для обновления
+     * @return обновлённый объект пользолвателя
+     */
+    private User updateUser(User user) {
         try {
             if (user.getId() == null) {
                 throw new ValidationException("Не указан идентификатор пользователя");
             }
-            user = User.userChecks(user);
             if (users.containsKey(user.getId())) {
                 User oldUser = users.get(user.getId());
                 oldUser.setEmail(user.getEmail());

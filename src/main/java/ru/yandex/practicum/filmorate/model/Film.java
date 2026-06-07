@@ -1,7 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.annotations.MinDate;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import java.time.LocalDate;
@@ -14,51 +19,36 @@ import java.time.format.DateTimeFormatter;
 @Builder
 public class Film {
     /**
+     * Дата самого раннего фильма
+     */
+    private static final String MIN_RELEASE_DATE = "28.12.1895";
+    /**
+     * Формат даты
+     */
+    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    /**
      * Идентификатор фильма
      */
     private Long id;
     /**
      * Название фильма
      */
+    @NotNull(message = "Название не может быть пустым")
+    @NotBlank(message = "Название не может быть пустым")
     private String name;
     /**
      * Описание фильма
      */
+    @Size(max = 200, message = "Длина описания должна быть максимум 200 символов")
     private String description;
     /**
      * Дата выхода фильма
      */
+    @MinDate(minDate = MIN_RELEASE_DATE,message = "Дата релиза должна быть не ранее " + MIN_RELEASE_DATE)
     private LocalDate releaseDate;
     /**
      * Продолжительность
      */
+    @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private int duration;
-    /**
-     * Дата самого раннего фильма
-     */
-    private static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
-    /**
-     * Формат даты
-     */
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
-    /**
-     * Проверки для фильма
-     *
-     * @param film объект для проверки
-     */
-    public static void filmChecks(Film film) {
-        if (film.getName() == null || film.getName().isBlank()) {
-            throw new ValidationException("Название не может быть пустым");
-        }
-        if (film.getDescription().length() > 200) {
-            throw new ValidationException("Длина описания должна быть максимум 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
-            throw new ValidationException("Дата релиза должна быть не ранее " + MIN_RELEASE_DATE.format(dtf));
-        }
-        if (film.getDuration() < 0) {
-            throw new ValidationException("Продолжительность фильма должна быть положительным числом");
-        }
-    }
 }

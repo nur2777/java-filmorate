@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -36,16 +37,12 @@ public class FilmController {
         return ++currentFilmId;
     }
 
-    /**
-     * Эндпоинт на добавление фильма
-     *
-     * @param newFilm новый фильм
-     * @return объект созданного фильма
+    /** Метод с логикой добавления нового фильма
+     * @param newFilm данные нового фильма
+     * @return объект фильма
      */
-    @PostMapping
-    public Film add(@RequestBody Film newFilm) {
+    private Film addNewFilm(Film newFilm) {
         try {
-            Film.filmChecks(newFilm);
             newFilm.setId(getNextFilmId());
             films.put(newFilm.getId(), newFilm);
             log.info("Фильм {} успешно добавлен.", newFilm.getName());
@@ -57,18 +54,36 @@ public class FilmController {
     }
 
     /**
+     * Эндпоинт на добавление фильма
+     *
+     * @param newFilm новый фильм
+     * @return объект добавленного фильма
+     */
+    @PostMapping
+    public Film add(@Valid @RequestBody Film newFilm) {
+        return addNewFilm(newFilm);
+    }
+
+    /**
      * Эндпоинт на обновление фильма
      *
      * @param film новые данные для обновления
      * @return объект обновленного фильма
      */
     @PutMapping
-    public Film update(@RequestBody Film film) {
+    public Film update(@Valid @RequestBody Film film) {
+        return updateFilm(film);
+    }
+
+    /** Метод обновления данных о фильме
+     * @param film обновленные данные о фильме
+     * @return обновлённый объект фильма
+     */
+    private Film updateFilm(Film film) {
         try {
             if (film.getId() == null) {
                 throw new ValidationException("Не указан идентификатор фильма");
             }
-            Film.filmChecks(film);
             if (films.containsKey(film.getId())) {
                 Film oldFilm = films.get(film.getId());
                 oldFilm.setName(film.getName());

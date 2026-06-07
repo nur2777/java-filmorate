@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -19,11 +20,16 @@ public class User {
     /**
      * Электронная почта
      */
+    @NotNull(message = "Электронная почта не может быть пустой!")
+    @Email(message = "Электронная почта должна содержать символ @")
     private String email;
 
     /**
      * Логин пользователя
      */
+    @NotNull
+    @NotBlank
+    @Pattern(regexp = "^\\S*$")
     private String login;
 
     /**
@@ -33,6 +39,7 @@ public class User {
     /**
      * Дата рождения
      */
+    @PastOrPresent(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
     // Пробел
     public static final CharSequence SPACE = " ";
@@ -44,23 +51,4 @@ public class User {
             return name;
         }
     }
-
-    /**
-     * Проверки для пользователя
-     *
-     * @param user объект для проверки
-     */
-    public static User userChecks(User user) {
-        if (user.getEmail() == null || !user.getEmail().contains("@")) {
-            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @");
-        }
-        if (user.getLogin() == null || user.getLogin().contains(SPACE)) {
-            throw new ValidationException("Логин не может быть пустым и содержать пробелы");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
-        return user;
-    }
-
 }
