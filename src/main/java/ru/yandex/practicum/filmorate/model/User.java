@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * Модель данных пользователя
@@ -50,4 +51,9 @@ public class User {
             return name;
         }
     }
+
+    /**
+     * Список друзей пользователя
+     */
+    private Set<Long> friends;
 }
