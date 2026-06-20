@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -91,4 +92,18 @@ public class InMemoryFilmStorage implements FilmStorage{
     public Collection<Film> getFilms() {
         return films.values();
     }
+
+    /** Метод проверки существования и получения одного фильма по идентификатору
+     * @return объект фильма
+     */
+    @Override
+    public Film getFilm(Long id){
+        if (id == null) {
+            throw new ValidationException("Не указан идентификатор фильма");
+        }
+        if (films.containsKey(id)) {
+            return films.get(id);
+        }
+        throw new NotFoundException("Не найден фильм с идентификатором " + id);
+    };
 }

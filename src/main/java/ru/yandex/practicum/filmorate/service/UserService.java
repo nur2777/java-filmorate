@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Класс отвечает за такие операции с пользователями, как добавление в друзья,
@@ -92,7 +91,21 @@ public class UserService {
         }
     }
 
+    /** Метод получения списка друзей у пользователя
+     * @param userId пользователь у которого надо получить список друзей
+     * @return список общих друзей между двумя пользователями
+     */
+    public Collection<User> getFriends(Long userId) {
+        log.trace("Проверяем существование и получаем объект пользователя");
+        User user = userStorage.getUser(userId);
+        return user.getFriends().stream()
+                .map(id -> userStorage.getUser(id))
+                .toList();
+    }
+
     /** Метод получения списка общих друзей
+     * @param userId пользователь
+     * @param otherUserId другой пользователь у которого надо найти общих друзей
      * @return список общих друзей между двумя пользователями
      */
     public Collection<User> getCommonFriends(Long userId, Long otherUserId) {

@@ -91,7 +91,7 @@ public class InMemoryUserStorage implements UserStorage {
         return users.values();
     }
 
-    /** Метод получения одного пользователя по идентификатору
+    /** Метод проверки существования и получения одного пользователя по идентификатору
      * @return объект пользователя
      */
     @Override

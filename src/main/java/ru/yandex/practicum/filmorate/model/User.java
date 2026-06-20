@@ -23,7 +23,6 @@ public class User {
     @NotNull(message = "Электронная почта не может быть пустой!")
     @Email(message = "Электронная почта должна содержать символ @")
     private String email;
-
     /**
      * Логин пользователя
      */
@@ -31,7 +30,6 @@ public class User {
     @NotBlank
     @Pattern(regexp = "^\\S*$")
     private String login;
-
     /**
      * Имя для отображения
      */
@@ -43,6 +41,10 @@ public class User {
     private LocalDate birthday;
     // Пробел
     public static final CharSequence SPACE = " ";
+    /**
+     * Список друзей пользователя
+     */
+    private Set<Long> friends;
 
     public String getName() {
         if (name == null) {
@@ -52,8 +54,4 @@ public class User {
         }
     }
 
-    /**
-     * Список друзей пользователя
-     */
-    private Set<Long> friends;
 }

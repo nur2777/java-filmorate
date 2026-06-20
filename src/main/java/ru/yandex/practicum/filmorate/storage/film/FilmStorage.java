@@ -13,21 +13,26 @@ public interface FilmStorage {
      * @param newFilm данные нового фильма
      * @return объект нового фильма
      */
-    public Film addNewFilm(Film newFilm);
+    Film addNewFilm(Film newFilm);
 
     /** Метод обновления фильма
      * @param film данные обновляемого фильма
      * @return объект обновленного фильма
      */
-    public Film updateFilm(Film film);
+    Film updateFilm(Film film);
 
     /** Метод удаления фильма
      * @param id идентификатор фильма
      */
-    public void deleteFilm(Long id);
+    void deleteFilm(Long id);
 
     /** Метод получения списка всех фильмов
      * @return список фильмов
      */
-    public Collection<Film> getFilms();
+    Collection<Film> getFilms();
+
+    /** Метод проверки существования и получения одного фильма по идентификатору
+     * @return объект фильма
+     */
+    Film getFilm(Long id);
 }

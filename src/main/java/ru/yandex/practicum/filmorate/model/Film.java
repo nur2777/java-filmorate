@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.annotations.MinDate;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 /**
  * Модель данных фильма
@@ -50,4 +51,8 @@ public class Film {
      */
     @Positive(message = "Продолжительность фильма должна быть положительным числом")
     private int duration;
+    /**
+     * Список идентификаторов пользователей поставивших лайк фильму
+     */
+    private Set<Long> likes;
 }
