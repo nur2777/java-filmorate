@@ -5,16 +5,17 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 
 @Slf4j
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
+
     /**
      * Список фильмов
      */
@@ -42,6 +43,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     public Film addNewFilm(Film newFilm) {
         try {
             newFilm.setId(getNextFilmId());
+            newFilm.setLikes(new HashSet<>());
             films.put(newFilm.getId(), newFilm);
             log.info("Фильм {} успешно добавлен.", newFilm.getName());
             return newFilm;
@@ -97,7 +99,7 @@ public class InMemoryFilmStorage implements FilmStorage{
      * @return объект фильма
      */
     @Override
-    public Film getFilm(Long id){
+    public Film getFilm(Long id) {
         if (id == null) {
             throw new ValidationException("Не указан идентификатор фильма");
         }
@@ -105,5 +107,5 @@ public class InMemoryFilmStorage implements FilmStorage{
             return films.get(id);
         }
         throw new NotFoundException("Не найден фильм с идентификатором " + id);
-    };
+    }
 }

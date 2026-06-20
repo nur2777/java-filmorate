@@ -75,7 +75,7 @@ public class FilmController {
      * @return объект обновленного фильма
      */
     @PutMapping("/{id}/like/{userId}")
-    public Film addLike(@Valid @PathVariable Long id, @Valid @PathVariable Long userId ) {
+    public Film addLike(@Valid @PathVariable Long id, @Valid @PathVariable Long userId) {
         return filmService.addLike(id,userId);
     }
 
@@ -87,7 +87,7 @@ public class FilmController {
      * @return объект обновленного фильма
      */
     @DeleteMapping("/{id}/like/{userId}")
-    public Film dislike(@Valid @PathVariable Long id, @Valid @PathVariable Long userId ) {
+    public Film dislike(@Valid @PathVariable Long id, @Valid @PathVariable Long userId) {
         return filmService.dislike(id,userId);
     }
 

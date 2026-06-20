@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
  * Класс отвечает за операции с фильмами — добавление и удаление лайка, вывод 10 наиболее
  * популярных фильмов по количеству лайков.
  */
+@Service
 @Slf4j
 public class FilmService {
 

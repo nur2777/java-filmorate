@@ -5,12 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -41,6 +38,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User addNewUser(User newUser) {
         try {
             newUser.setId(getNextUserId());
+            newUser.setFriends(new HashSet<>());
             users.put(newUser.getId(), newUser);
             log.info("Пользователь {} успешно добавлен.", newUser.getName());
             return newUser;
@@ -95,7 +93,7 @@ public class InMemoryUserStorage implements UserStorage {
      * @return объект пользователя
      */
     @Override
-    public User getUser(Long id){
+    public User getUser(Long id) {
         if (id == null) {
             throw new ValidationException("Не указан идентификатор пользователя");
         }
@@ -103,6 +101,6 @@ public class InMemoryUserStorage implements UserStorage {
             return users.get(id);
         }
         throw new NotFoundException("Не найден пользователь с идентификатором " + id);
-    };
+    }
 
 }

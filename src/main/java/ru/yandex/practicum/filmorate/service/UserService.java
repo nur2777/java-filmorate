@@ -76,7 +76,7 @@ public class UserService {
             log.warn("Пользователь с id {} уже является другом друга.", userId);
         }
         return user;
-    };
+    }
 
     /** Метод исключающий пользователя из списка друзей
      * @param userId пользователь
