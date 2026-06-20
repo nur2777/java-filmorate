@@ -17,7 +17,11 @@ import java.util.Collection;
 @Slf4j
 public class FilmController {
 
-    FilmService filmService;
+    /**
+     * Значение по умолчанию при пустом параметре count
+     */
+    private static final String DEFAULT_TOP_COUNT = "10";
+    private final FilmService filmService;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -98,7 +102,7 @@ public class FilmController {
      * @return список популярных фильмов
      */
     @GetMapping("/popular")
-    public Collection<Film> getTopPopularFilms(@RequestParam(defaultValue = "10") int count) {
+    public Collection<Film> getTopPopularFilms(@RequestParam(defaultValue = DEFAULT_TOP_COUNT) int count) {
         return filmService.getTopPopularFilms(count);
     }
 }

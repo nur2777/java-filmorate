@@ -6,9 +6,13 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ErrorResponse {
-    // название ошибки
-    String error;
-    // подробное описание
-    String description;
+    /**
+     *  Название ошибки
+     */
+    private String error;
+    /**
+     * Подробное описание
+     */
+    private String description;
 
 }
