@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 
@@ -19,43 +18,39 @@ import java.util.Collection;
 public class UserController {
 
     UserService userService;
-    UserStorage userStorage;
 
     @Autowired
-    public UserController(UserService userService, UserStorage userStorage) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userStorage = userStorage;
     }
 
     /**
      * Эндпоинт на добавление пользователя
-     *
      * @param newUser новый пользователь
      * @return объект созданного пользователя
      */
     @PostMapping
     public User add(@Valid @RequestBody User newUser) {
-        return userStorage.addNewUser(newUser);
+        return userService.addNewUser(newUser);
     }
 
     /**
      * Эндпоинт на обновление данных о пользователе
      *
      * @param user новые данные о пользователе
-     * @return объект обновленного о пользователя
+     * @return объект обновленного пользователя
      */
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        return userStorage.updateUser(user);
+        return userService.updateUser(user);
     }
 
     /**
      * Эндпоинт получения списка всех пользователей
-     *
      * @return список всех пользователей
      */
     @GetMapping
     public Collection<User> getAllUsers() {
-        return userStorage.getUsers();
+        return userService.getAllUsers();
     }
 }

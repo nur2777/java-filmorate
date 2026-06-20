@@ -6,7 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Класс отвечает за такие операции с пользователями, как добавление в друзья,
@@ -23,30 +24,86 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
+    /** Метод добавления нового пользователя
+     * @param newUser данные нового пользователя
+     * @return объект нового пользователя
+     */
+    public User addNewUser(User newUser) {
+        return userStorage.addNewUser(newUser);
+    }
+
+    /** Метод обновления данных о пользователе
+     * @param user данные для обновления
+     * @return объект обновленного пользователя
+     */
+    public User updateUser(User user) {
+        return userStorage.updateUser(user);
+    }
+
+    /** Метод получения списка всех пользователей
+     * @return список всех пользователей
+     */
+    public Collection<User> getAllUsers() {
+        return userStorage.getUsers();
+    }
+
     /** Метода добавления в друзья
      * @param userId пользователь к которому добавляются в друзья
      * @param newFriendId идентификатор нового друга
      */
-    public void addNewFriend(Long userId, Long newFriendId){
-        log.trace("Проверяем и получаем объект пользователя");
+    public void addNewFriend(Long userId, Long newFriendId) {
+        log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
-        log.trace("Проверяем и получаем объект друга");
+        log.trace("Проверяем существование и получаем объект друга");
         User friend = userStorage.getUser(newFriendId);
-        Set<Long> userFriends = user.getFriends();
-        if (!userFriends.contains(newFriendId)) { // проверяем существование друга в списке
-            userFriends.add(newFriendId);
+        if (user.getFriends().add(newFriendId)) {
             log.trace("Новый друг к пользователю успешно добавлен");
         } else {
             log.warn("Друг с id {} уже является другом пользователю.", newFriendId);
         }
         // Пока пользователям не надо одобрять заявки в друзья — добавляем сразу.
         // То есть если Лена стала другом Саши, то это значит, что Саша теперь друг Лены.
-        Set<Long> friendFriends = friend.getFriends();
-        if (!friendFriends.contains(userId)) {  // проверяем существование пользователя в списке друзей у друга
-            friendFriends.add(userId);
+        if (friend.getFriends().add(userId)) {
             log.trace("Пользователь успешно добавлен в друзья к другу");
         } else {
             log.warn("Пользователь с id {} уже является другом друга.", userId);
         }
     };
+
+    /** Метод исключающий пользователя из списка друзей
+     * @param userId пользователь
+     * @param friendId друг которого надо исключить
+     */
+    public void unfriend(Long userId, Long friendId) {
+        log.trace("Проверяем существование и получаем объект пользователя");
+        User user = userStorage.getUser(userId);
+        log.trace("Проверяем существование и получаем объект друга");
+        User friend = userStorage.getUser(friendId);
+        if (user.getFriends().remove(friendId)) {
+            log.trace("Друг удален из списка друзей пользователя успешно");
+        } else {
+            log.warn("Друг с id {} не является другом пользователю.", friendId);
+        }
+        // Удаление пользователя из списка друзей друга
+        if (friend.getFriends().remove(userId)) {
+            log.trace("Пользователь успешно удален из списка друзей друга");
+        } else {
+            log.warn("Пользователь с id {} не является другом друга.", userId);
+        }
+    }
+
+    /** Метод получения списка общих друзей
+     * @return список общих друзей между двумя пользователями
+     */
+    public Collection<User> getCommonFriends(Long userId, Long otherUserId) {
+        log.trace("Проверяем существование и получаем объект пользователя");
+        User user = userStorage.getUser(userId);
+        log.trace("Проверяем существование и получаем объект друга");
+        User otherUser = userStorage.getUser(otherUserId);
+        return user.getFriends().stream()
+                        .filter(otherUser.getFriends()::contains)
+                        .map(id -> userStorage.getUser(id))
+                        .toList();
+    }
+
 }
