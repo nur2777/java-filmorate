@@ -23,6 +23,14 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
+    /** Метод получения  пользователя
+     * @param userId идентификатор пользователя
+     * @return объект пользователя
+     */
+    public User getUser(Long userId) {
+        return userStorage.getUser(userId);
+    }
+
     /** Метод добавления нового пользователя
      * @param newUser данные нового пользователя
      * @return объект нового пользователя
@@ -50,7 +58,7 @@ public class UserService {
      * @param userId пользователь к которому добавляются в друзья
      * @param newFriendId идентификатор нового друга
      */
-    public void addNewFriend(Long userId, Long newFriendId) {
+    public User addNewFriend(Long userId, Long newFriendId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
         log.trace("Проверяем существование и получаем объект друга");
@@ -67,13 +75,14 @@ public class UserService {
         } else {
             log.warn("Пользователь с id {} уже является другом друга.", userId);
         }
+        return user;
     };
 
     /** Метод исключающий пользователя из списка друзей
      * @param userId пользователь
      * @param friendId друг которого надо исключить
      */
-    public void unfriend(Long userId, Long friendId) {
+    public User unfriend(Long userId, Long friendId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
         log.trace("Проверяем существование и получаем объект друга");
@@ -89,6 +98,7 @@ public class UserService {
         } else {
             log.warn("Пользователь с id {} не является другом друга.", userId);
         }
+        return user;
     }
 
     /** Метод получения списка друзей у пользователя

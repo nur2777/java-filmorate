@@ -26,6 +26,15 @@ public class FilmService {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
+
+    /** Метод получения фильма
+     * @param filmId идентификатор фильма
+     * @return объект фильма
+     */
+    public Film getFilm(Long filmId) {
+        return filmStorage.getFilm(filmId);
+    }
+
     /**
      * Метод добавления фильма
      * @param newFilm новый фильм
@@ -56,7 +65,7 @@ public class FilmService {
      * @param filmId идентификатор фильма
      * @param userId идентификатор пользователя
      */
-    public void addLike(Long filmId, Long userId) {
+    public Film addLike(Long filmId, Long userId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
         log.trace("Проверяем существование и получаем объект фильма");
@@ -67,13 +76,14 @@ public class FilmService {
         } else {
             log.warn("Пользователь с id {} уже уже ранее поставил лайк.", userId);
         }
+        return film;
     }
 
     /** Метод исключения лайка у фильма
      * @param filmId идентификатор фильма
      * @param userId идентификатор пользователя
      */
-    public void dislike(Long filmId, Long userId) {
+    public Film dislike(Long filmId, Long userId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
         log.trace("Проверяем существование и получаем объект фильма");
@@ -84,6 +94,7 @@ public class FilmService {
         } else {
             log.warn("Пользователь с id {} не ставил лайк этому фильму.", userId);
         }
+        return film;
     }
 
     /** Метода возвращает список популярных фильмов по количеству лайков.

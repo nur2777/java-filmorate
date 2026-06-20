@@ -46,6 +46,16 @@ public class FilmController {
         return filmService.updateFilm(film);
     }
 
+    /**
+     * Эндпоинт получения конкретного фильма
+     *
+     * @param id идентификатор фильма
+     * @return объект фильма
+     */
+    @GetMapping("/{id}")
+    public Film getFilm(@Valid @PathVariable Long id) {
+        return filmService.getFilm(id);
+    }
 
     /**
      * Эндпоинт получения списка всех фильмов
@@ -55,5 +65,40 @@ public class FilmController {
     @GetMapping
     public Collection<Film> getAllFilms() {
         return filmService.getFilms();
+    }
+
+    /**
+     * Эндпоинт на установку лайка фильму.
+     *
+     * @param id идентификатор фильма
+     * @param userId идентификатор фильма
+     * @return объект обновленного фильма
+     */
+    @PutMapping("/{id}/like/{userId}")
+    public Film addLike(@Valid @PathVariable Long id, @Valid @PathVariable Long userId ) {
+        return filmService.addLike(id,userId);
+    }
+
+    /**
+     * Эндпоинт на удаление лайка
+     *
+     * @param id идентификатор фильма у которого надо удалить лайк
+     * @param userId идентификатор пользователя лайк которого надо удалить
+     * @return объект обновленного фильма
+     */
+    @DeleteMapping("/{id}/like/{userId}")
+    public Film dislike(@Valid @PathVariable Long id, @Valid @PathVariable Long userId ) {
+        return filmService.dislike(id,userId);
+    }
+
+    /**
+     * Эндпоинт возвращает список из популярных фильмов по количеству лайков.
+     *
+     * @param count количество популярных фильмов которые нужно вернуть
+     * @return список популярных фильмов
+     */
+    @GetMapping("/popular")
+    public Collection<Film> getTopPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        return filmService.getTopPopularFilms(count);
     }
 }
