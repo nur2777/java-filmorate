@@ -9,7 +9,7 @@ import java.util.Collection;
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private final UserStorage userStorage;
 
