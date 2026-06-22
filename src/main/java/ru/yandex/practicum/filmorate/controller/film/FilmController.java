@@ -1,43 +1,21 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.controller.film;
 
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
 
 /**
- * Класс контроллер для фильмов
+ * Интерфейс для контроллера по работе с фильмами
  */
-@RestController
-@RequestMapping("/films")
-@Slf4j
-public class FilmController {
-
-    /**
-     * Значение по умолчанию при пустом параметре count
-     */
-    private static final String DEFAULT_TOP_COUNT = "10";
-    private final FilmService filmService;
-
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
+public interface FilmController {
     /**
      * Эндпоинт на добавление фильма
      *
      * @param newFilm новый фильм
      * @return объект добавленного фильма
      */
-    @PostMapping
-    public Film add(@Valid @RequestBody Film newFilm) {
-        return filmService.addNewFilm(newFilm);
-    }
+    Film add(Film newFilm);
 
     /**
      * Эндпоинт на обновление фильма
@@ -45,10 +23,7 @@ public class FilmController {
      * @param film новые данные для обновления
      * @return объект обновленного фильма
      */
-    @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-        return filmService.updateFilm(film);
-    }
+    Film update(Film film);
 
     /**
      * Эндпоинт получения конкретного фильма
@@ -56,10 +31,7 @@ public class FilmController {
      * @param id идентификатор фильма
      * @return объект фильма
      */
-    @GetMapping("/{id}")
-    public Film getFilm(@Valid @PathVariable Long id) {
-        return filmService.getFilm(id);
-    }
+    Film getFilm(Long id);
 
     /**
      * Эндпоинт получения списка всех фильмов
@@ -67,9 +39,7 @@ public class FilmController {
      * @return список всех фильмов
      */
     @GetMapping
-    public Collection<Film> getAllFilms() {
-        return filmService.getFilms();
-    }
+    Collection<Film> getAllFilms();
 
     /**
      * Эндпоинт на установку лайка фильму.
@@ -78,10 +48,7 @@ public class FilmController {
      * @param userId идентификатор фильма
      * @return объект обновленного фильма
      */
-    @PutMapping("/{id}/like/{userId}")
-    public Film addLike(@Valid @PathVariable Long id, @Valid @PathVariable Long userId) {
-        return filmService.addLike(id,userId);
-    }
+    Film addLike(Long id,Long userId);
 
     /**
      * Эндпоинт на удаление лайка
@@ -90,10 +57,7 @@ public class FilmController {
      * @param userId идентификатор пользователя лайк которого надо удалить
      * @return объект обновленного фильма
      */
-    @DeleteMapping("/{id}/like/{userId}")
-    public Film dislike(@Valid @PathVariable Long id, @Valid @PathVariable Long userId) {
-        return filmService.dislike(id,userId);
-    }
+    Film dislike(Long id, Long userId);
 
     /**
      * Эндпоинт возвращает список из популярных фильмов по количеству лайков.
@@ -101,8 +65,5 @@ public class FilmController {
      * @param count количество популярных фильмов которые нужно вернуть
      * @return список популярных фильмов
      */
-    @GetMapping("/popular")
-    public Collection<Film> getTopPopularFilms(@RequestParam(defaultValue = DEFAULT_TOP_COUNT) int count) {
-        return filmService.getTopPopularFilms(count);
-    }
+    Collection<Film> getTopPopularFilms(int count);
 }

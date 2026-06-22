@@ -1,38 +1,19 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.controller.user;
 
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.Collection;
 
 /**
- * Класс контроллер для пользователей
+ * Интерфейс для контроллера по работе с пользователями
  */
-@RestController
-@Slf4j
-@RequestMapping("/users")
-public class UserController {
-
-    private final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
+public interface UserController {
     /**
      * Эндпоинт на добавление пользователя
      * @param newUser новый пользователь
      * @return объект созданного пользователя
      */
-    @PostMapping
-    public User add(@Valid @RequestBody User newUser) {
-        return userService.addNewUser(newUser);
-    }
+    User add(User newUser);
 
     /**
      * Эндпоинт на обновление данных о пользователе
@@ -40,10 +21,7 @@ public class UserController {
      * @param user новые данные о пользователе
      * @return объект обновленного пользователя
      */
-    @PutMapping
-    public User update(@Valid @RequestBody User user) {
-        return userService.updateUser(user);
-    }
+    User update(User user);
 
     /**
      * Эндпоинт получения конкретного пользователя
@@ -51,19 +29,13 @@ public class UserController {
      * @param id идентификатор пользователя
      * @return объект пользователя
      */
-    @GetMapping("/{id}")
-    public User getUser(@Valid @PathVariable Long id) {
-        return userService.getUser(id);
-    }
+    User getUser(Long id);
 
     /**
      * Эндпоинт получения списка всех пользователей
      * @return список всех пользователей
      */
-    @GetMapping
-    public Collection<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
+    Collection<User> getAllUsers();
 
     /**
      * Эндпоинт добавления в друзья.
@@ -72,10 +44,7 @@ public class UserController {
      * @param friendId идентификатор друга которого нужно добавить
      * @return объект обновленного пользователя
      */
-    @PutMapping("{id}/friends/{friendId}")
-    public User addNewFriend(@Valid @PathVariable Long id, @PathVariable Long friendId) {
-        return userService.addNewFriend(id,friendId);
-    }
+    User addNewFriend(Long id, Long friendId);
 
     /**
      * Эндпоинт удаление из друзей.
@@ -84,10 +53,7 @@ public class UserController {
      * @param friendId идентификатор друга которого нужно удалить
      * @return объект обновленного пользователя
      */
-    @DeleteMapping("{id}/friends/{friendId}")
-    public User unfriend(@Valid @PathVariable Long id, @PathVariable Long friendId) {
-        return userService.unfriend(id,friendId);
-    }
+    User unfriend(Long id, Long friendId);
 
     /**
      * Эндпоинт получения список пользователей, являющихся друзьями
@@ -95,10 +61,7 @@ public class UserController {
      * @param id идентификатор пользователя
      * @return список друзей
      */
-    @GetMapping("/{id}/friends")
-    public Collection<User> getFriends(@Valid @PathVariable Long id) {
-        return userService.getFriends(id);
-    }
+    Collection<User> getFriends(Long id);
 
     /**
      * Эндпоинт получения списка друзей, общих с другим пользователем.
@@ -107,8 +70,5 @@ public class UserController {
      * @param otherId идентификатор другого пользователя
      * @return список друзей
      */
-    @GetMapping("/{id}/friends/common/{otherId}")
-    public Collection<User> getCommonFriends(@Valid @PathVariable Long id, @PathVariable Long otherId) {
-        return userService.getCommonFriends(id,otherId);
-    }
+    Collection<User> getCommonFriends(Long id, Long otherId);
 }

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,56 +7,38 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.Collection;
 
-/**
- * Класс отвечает за такие операции с пользователями, как добавление в друзья,
- * удаление из друзей, вывод списка общих друзей.
- */
 @Service
 @Slf4j
-public class UserService {
+public class UserServiceImpl implements UserService{
 
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserServiceImpl(UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
-    /** Метод получения  пользователя
-     * @param userId идентификатор пользователя
-     * @return объект пользователя
-     */
+    @Override
     public User getUser(Long userId) {
         return userStorage.getUser(userId);
     }
 
-    /** Метод добавления нового пользователя
-     * @param newUser данные нового пользователя
-     * @return объект нового пользователя
-     */
+    @Override
     public User addNewUser(User newUser) {
         return userStorage.addNewUser(newUser);
     }
 
-    /** Метод обновления данных о пользователе
-     * @param user данные для обновления
-     * @return объект обновленного пользователя
-     */
+    @Override
     public User updateUser(User user) {
         return userStorage.updateUser(user);
     }
 
-    /** Метод получения списка всех пользователей
-     * @return список всех пользователей
-     */
+    @Override
     public Collection<User> getAllUsers() {
         return userStorage.getUsers();
     }
 
-    /** Метода добавления в друзья
-     * @param userId пользователь к которому добавляются в друзья
-     * @param newFriendId идентификатор нового друга
-     */
+    @Override
     public User addNewFriend(Long userId, Long newFriendId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
@@ -77,10 +59,7 @@ public class UserService {
         return user;
     }
 
-    /** Метод исключающий пользователя из списка друзей
-     * @param userId пользователь
-     * @param friendId друг которого надо исключить
-     */
+    @Override
     public User unfriend(Long userId, Long friendId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
@@ -100,10 +79,7 @@ public class UserService {
         return user;
     }
 
-    /** Метод получения списка друзей у пользователя
-     * @param userId пользователь у которого надо получить список друзей
-     * @return список общих друзей между двумя пользователями
-     */
+    @Override
     public Collection<User> getFriends(Long userId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
@@ -112,11 +88,7 @@ public class UserService {
                 .toList();
     }
 
-    /** Метод получения списка общих друзей
-     * @param userId пользователь
-     * @param otherUserId другой пользователь у которого надо найти общих друзей
-     * @return список общих друзей между двумя пользователями
-     */
+    @Override
     public Collection<User> getCommonFriends(Long userId, Long otherUserId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);

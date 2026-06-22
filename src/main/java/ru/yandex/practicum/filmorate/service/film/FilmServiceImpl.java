@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,61 +12,40 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
-/**
- * Класс отвечает за операции с фильмами — добавление и удаление лайка, вывод 10 наиболее
- * популярных фильмов по количеству лайков.
- */
 @Service
 @Slf4j
-public class FilmService {
+public class FilmServiceImpl implements FilmService{
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage,UserStorage userStorage) {
+    public FilmServiceImpl(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
 
-    /** Метод получения фильма
-     * @param filmId идентификатор фильма
-     * @return объект фильма
-     */
+    @Override
     public Film getFilm(Long filmId) {
         return filmStorage.getFilm(filmId);
     }
 
-    /**
-     * Метод добавления фильма
-     * @param newFilm новый фильм
-     * @return объект добавленного фильма
-     */
+    @Override
     public Film addNewFilm(Film newFilm) {
         return filmStorage.addNewFilm(newFilm);
     }
 
-    /**
-     * Метод обновления фильма
-     * @param film новые данные для обновления
-     * @return объект обновленного фильма
-     */
+    @Override
     public Film updateFilm(Film film) {
         return filmStorage.updateFilm(film);
     }
 
-    /**
-     * Метод получения списка всех фильмов
-     * @return список всех фильмов
-     */
+    @Override
     public Collection<Film> getFilms() {
         return filmStorage.getFilms();
     }
 
-    /** Метод добавления лайка для фильма
-     * @param filmId идентификатор фильма
-     * @param userId идентификатор пользователя
-     */
+    @Override
     public Film addLike(Long filmId, Long userId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
@@ -81,10 +60,7 @@ public class FilmService {
         return film;
     }
 
-    /** Метод исключения лайка у фильма
-     * @param filmId идентификатор фильма
-     * @param userId идентификатор пользователя
-     */
+    @Override
     public Film dislike(Long filmId, Long userId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
@@ -99,10 +75,7 @@ public class FilmService {
         return film;
     }
 
-    /** Метода возвращает список популярных фильмов по количеству лайков.
-     * @param count количество фильмов для возврата (топ первых)
-     * @return список фильмов
-     */
+    @Override
     public Collection<Film> getTopPopularFilms(int count) {
         return filmStorage.getFilms().stream()
                 .filter(film -> !film.getLikes().isEmpty())
