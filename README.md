@@ -1,2 +1,68 @@
 # java-filmorate
-Template repository for Filmorate project.
+## Схема базы данных для приложения Filmorate.
+![Схема базы данных для приложения Filmorate.](/src/main/resources/Filmorate_database.png)
+
+Ниже пояснения к схеме.
+
+### Таблица **Users** 
+Хранит данные о пользователях приложения.
+
+#### Примеры запросов для основных операций
+```sql
+-- Получение данных конкретного пользователя
+SELECT *
+  FROM users
+ WHERE id = 1
+```
+```sql
+-- Получение списка всех пользователей
+SELECT *
+  FROM users
+```
+```sql
+-- Получение списка друзей у конкретного пользователя
+SELECT u.name
+  FROM friends f
+       JOIN users u on f.friend_id = u.id
+ WHERE f.user_id = 123 -- заданный пользователь
+UNION
+ SELECT u.name
+  FROM friends f
+       JOIN users u on f.user_id = u.id
+ WHERE f.friend_id = 123 -- заданный пользователь
+```
+
+### Таблица **Friends** 
+Хранит данные о дружеских связях между пользователями. 
+Дружба определяется наличием одной записи в таблице с указанием идентификаторов пользователей.
+Статус дружбы может быть как _**Неподтвержденная**_ или **_Подтвержденная_**
+
+### Таблица **Films** 
+Хранит данные о фильмах.
+
+#### Примеры запросов для основных операций
+```sql
+-- Получение конкретного фильма
+SELECT *
+  FROM films
+ WHERE id = 1
+```
+```sql
+-- Получение списка всех фильмов
+SELECT *
+  FROM films
+```
+```sql
+-- Получение списка популярных фильмов
+SELECT f.name, COUNT(l.user_id) count_likes
+  FROM films f 
+       JOIN likes l on f.film_id = l.film_id
+ GROUP BY f.name 
+ ORDER BY count_likes desc
+```
+### Таблица **Genres** 
+Хранит жанры, которым принадлежит фильм.
+
+### Таблица **Likes** 
+Хранит лайки поставленные фильму пользователями.
+
