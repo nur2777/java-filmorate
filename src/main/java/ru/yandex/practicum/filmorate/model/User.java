@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.HashMap;
 
 /**
  * Модель данных пользователя
@@ -44,7 +44,7 @@ public class User {
     /**
      * Список друзей пользователя
      */
-    private Set<Long> friends;
+    private HashMap<Long,FriendshipStatus> friends;
 
     public String getName() {
         if (name == null) {

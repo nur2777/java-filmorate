@@ -55,4 +55,12 @@ public class Film {
      * Список идентификаторов пользователей поставивших лайк фильму
      */
     private Set<Long> likes;
+    /**
+     * Список жанров у фильма
+     */
+    private Set<Genre> genres;
+    /**
+     * Возрастное ограничение для фильма
+     */
+    private Rating rating;
 }
