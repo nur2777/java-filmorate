@@ -1,23 +1,17 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.storage.user;
 
-import jakarta.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-/**
- * Класс контроллер для пользователей
- */
-@RestController
+@Component
 @Slf4j
-@RequestMapping("/users")
-public class UserController {
+public class InMemoryUserStorage implements UserStorage {
     /**
      * Список пользователей
      */
@@ -37,24 +31,14 @@ public class UserController {
         return ++currentUserId;
     }
 
-    /**
-     * Эндпоинт на добавление пользователя
-     *
-     * @param newUser новый пользователь
-     * @return объект созданного пользователя
-     */
-    @PostMapping
-    public User add(@Valid @RequestBody User newUser) {
-        return addNewUser(newUser);
-    }
-
     /** Метод добавления нового пользователя
      * @param newUser данные нового пользователя
      * @return объект с добавленным пользователем
      */
-    private User addNewUser(User newUser) {
+    public User addNewUser(User newUser) {
         try {
             newUser.setId(getNextUserId());
+            newUser.setFriends(new HashSet<>());
             users.put(newUser.getId(), newUser);
             log.info("Пользователь {} успешно добавлен.", newUser.getName());
             return newUser;
@@ -64,22 +48,11 @@ public class UserController {
         }
     }
 
-    /**
-     * Эндпоинт на обновление данных о пользователе
-     *
-     * @param user новые данные о пользователе
-     * @return объект обновленного о пользователя
-     */
-    @PutMapping
-    public User update(@Valid @RequestBody User user) {
-        return updateUser(user);
-    }
-
     /** Метод обновления данных о пользователе
      * @param user данные для обновления
      * @return обновлённый объект пользолвателя
      */
-    private User updateUser(User user) {
+    public User updateUser(User user) {
         try {
             if (user.getId() == null) {
                 throw new ValidationException("Не указан идентификатор пользователя");
@@ -100,13 +73,34 @@ public class UserController {
         }
     }
 
-    /**
-     * Эндпоинт получения списка всех пользователей
-     *
-     * @return список всех пользователей
+    /** Метод удаляет пользователя по идентификатору
+     * @param id идентификатор пользователя
      */
-    @GetMapping
-    public Collection<User> getAllUsers() {
+    @Override
+    public void deleteUser(Long id) {
+        log.info("Выполняется удаление пользователя!");
+    }
+
+    /** Метод возвращает список всех пользователей
+     * @return список пользователей
+     */
+    @Override
+    public Collection<User> getUsers() {
         return users.values();
     }
+
+    /** Метод проверки существования и получения одного пользователя по идентификатору
+     * @return объект пользователя
+     */
+    @Override
+    public User getUser(Long id) {
+        if (id == null) {
+            throw new ValidationException("Не указан идентификатор пользователя");
+        }
+        if (users.containsKey(id)) {
+            return users.get(id);
+        }
+        throw new NotFoundException("Не найден пользователь с идентификатором " + id);
+    }
+
 }

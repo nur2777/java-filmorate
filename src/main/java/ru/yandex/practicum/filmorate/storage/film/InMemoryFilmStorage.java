@@ -1,23 +1,20 @@
-package ru.yandex.practicum.filmorate.controller;
+package ru.yandex.practicum.filmorate.storage.film;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
-/**
- * Класс контроллер для фильмов
- */
-@RestController
-@RequestMapping("/films")
+
 @Slf4j
-public class FilmController {
+@Component
+public class InMemoryFilmStorage implements FilmStorage {
+
     /**
      * Список фильмов
      */
@@ -41,9 +38,11 @@ public class FilmController {
      * @param newFilm данные нового фильма
      * @return объект фильма
      */
-    private Film addNewFilm(Film newFilm) {
+    @Override
+    public Film addNewFilm(Film newFilm) {
         try {
             newFilm.setId(getNextFilmId());
+            newFilm.setLikes(new HashSet<>());
             films.put(newFilm.getId(), newFilm);
             log.info("Фильм {} успешно добавлен.", newFilm.getName());
             return newFilm;
@@ -53,33 +52,12 @@ public class FilmController {
         }
     }
 
-    /**
-     * Эндпоинт на добавление фильма
-     *
-     * @param newFilm новый фильм
-     * @return объект добавленного фильма
-     */
-    @PostMapping
-    public Film add(@Valid @RequestBody Film newFilm) {
-        return addNewFilm(newFilm);
-    }
-
-    /**
-     * Эндпоинт на обновление фильма
-     *
-     * @param film новые данные для обновления
-     * @return объект обновленного фильма
-     */
-    @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-        return updateFilm(film);
-    }
-
     /** Метод обновления данных о фильме
      * @param film обновленные данные о фильме
      * @return обновлённый объект фильма
      */
-    private Film updateFilm(Film film) {
+    @Override
+    public Film updateFilm(Film film) {
         try {
             if (film.getId() == null) {
                 throw new ValidationException("Не указан идентификатор фильма");
@@ -100,13 +78,33 @@ public class FilmController {
         }
     }
 
-    /**
-     * Эндпоинт получения списка всех фильмов
-     *
-     * @return список всех фильмов
+    /** Метод удаляет фильм по идентификатору
+     * @param id идентификатор фильма
      */
-    @GetMapping
-    public Collection<Film> getAllFilms() {
+    @Override
+    public void deleteFilm(Long id) {
+        log.info("Выполняется удаление фильма!");
+    }
+
+    /** Метод возвращает список всех фильмов
+     * @return список фильмов
+     */
+    @Override
+    public Collection<Film> getFilms() {
         return films.values();
+    }
+
+    /** Метод проверки существования и получения одного фильма по идентификатору
+     * @return объект фильма
+     */
+    @Override
+    public Film getFilm(Long id) {
+        if (id == null) {
+            throw new ValidationException("Не указан идентификатор фильма");
+        }
+        if (films.containsKey(id)) {
+            return films.get(id);
+        }
+        throw new NotFoundException("Не найден фильм с идентификатором " + id);
     }
 }
