@@ -15,6 +15,7 @@ public enum Rating {
      * Описание рейтинга
      */
     private final String description;
+
     Rating(String description) {
         this.description = description;
     }
