@@ -58,9 +58,9 @@ public class Film {
     /**
      * Список жанров у фильма
      */
-    private Set<Genre> genres;
+    private Set<String> genres;
     /**
      * Возрастное ограничение для фильма
      */
-    private Rating rating;
+    private String rating;
 }
