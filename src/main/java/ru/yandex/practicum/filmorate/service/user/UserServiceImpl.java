@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.Collection;
@@ -45,19 +44,10 @@ public class UserServiceImpl implements UserService {
         User user = userStorage.getUser(userId);
         log.trace("Проверяем существование и получаем объект друга");
         User friend = userStorage.getUser(newFriendId);
-        if (!user.getFriends().containsKey(newFriendId)) {
-            user.getFriends().put(newFriendId, FriendshipStatus.CONFIRMED);
+        if (user.getFriends().add(newFriendId)) {
             log.trace("Новый друг к пользователю успешно добавлен");
         } else {
             log.warn("Друг с id {} уже является другом пользователю.", newFriendId);
-        }
-        // Пока пользователям не надо одобрять заявки в друзья — добавляем сразу.
-        // То есть если Лена стала другом Саши, то это значит, что Саша теперь друг Лены.
-        if (!friend.getFriends().containsKey(userId)) {
-            friend.getFriends().put(userId, FriendshipStatus.CONFIRMED);
-            log.trace("Пользователь успешно добавлен в друзья к другу");
-        } else {
-            log.warn("Пользователь с id {} уже является другом друга.", userId);
         }
         return user;
     }
@@ -68,18 +58,10 @@ public class UserServiceImpl implements UserService {
         User user = userStorage.getUser(userId);
         log.trace("Проверяем существование и получаем объект друга");
         User friend = userStorage.getUser(friendId);
-        if (user.getFriends().containsKey(friendId)) {
-            user.getFriends().remove(friendId);
+        if (user.getFriends().remove(friendId)) {
             log.trace("Друг удален из списка друзей пользователя успешно");
         } else {
             log.warn("Друг с id {} не является другом пользователю.", friendId);
-        }
-        // Удаление пользователя из списка друзей друга
-        if (friend.getFriends().containsKey(userId)) {
-            friend.getFriends().remove(userId);
-            log.trace("Пользователь успешно удален из списка друзей друга");
-        } else {
-            log.warn("Пользователь с id {} не является другом друга.", userId);
         }
         return user;
     }
@@ -88,7 +70,7 @@ public class UserServiceImpl implements UserService {
     public Collection<User> getFriends(Long userId) {
         log.trace("Проверяем существование и получаем объект пользователя");
         User user = userStorage.getUser(userId);
-        return user.getFriends().keySet().stream()
+        return user.getFriends().stream()
                 .map(id -> userStorage.getUser(id))
                 .toList();
     }
@@ -99,10 +81,10 @@ public class UserServiceImpl implements UserService {
         User user = userStorage.getUser(userId);
         log.trace("Проверяем существование и получаем объект друга");
         User otherUser = userStorage.getUser(otherUserId);
-        return user.getFriends().keySet().stream()
-                        .filter(otherUser.getFriends().keySet()::contains)
-                        .map(id -> userStorage.getUser(id))
-                        .toList();
+        return user.getFriends().stream()
+                .filter(otherUser.getFriends()::contains)
+                .map(id -> userStorage.getUser(id))
+                .toList();
     }
 
 }
