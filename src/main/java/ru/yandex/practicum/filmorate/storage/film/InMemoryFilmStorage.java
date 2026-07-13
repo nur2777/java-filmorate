@@ -12,7 +12,7 @@ import java.util.Map;
 
 
 @Slf4j
-@Component
+@Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
 
     /**

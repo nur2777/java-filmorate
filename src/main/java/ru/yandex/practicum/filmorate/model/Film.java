@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.annotations.MinDate;
 
 import java.time.LocalDate;
@@ -56,11 +57,11 @@ public class Film {
      */
     private Set<Long> likes;
     /**
-     * Список жанров у фильма
+     * Список идентификаторов жанров у фильма
      */
-    private Set<String> genres;
+    private Set<Long> genres;
     /**
-     * Возрастное ограничение для фильма
+     * Возрастное ограничение для фильма, идентификатор рейтинга
      */
-    private String rating;
+    private Long ratingId;
 }
