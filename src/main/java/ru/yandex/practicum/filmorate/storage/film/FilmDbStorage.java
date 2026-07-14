@@ -16,6 +16,9 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Component("filmDbStorage")
@@ -43,6 +46,7 @@ public class FilmDbStorage implements FilmStorage{
         } else {
             throw new InternalServerException("Не удалось сохранить данные");
         }
+        //TODO реализовать вставку списка жанров
     }
 
     @Override
@@ -64,6 +68,7 @@ public class FilmDbStorage implements FilmStorage{
             } else {
                 return getFilm(film.getId());
             }
+            //TODO реализовать обновление списка жанров
         } catch (ValidationException | NotFoundException e) {
             log.warn(e.getMessage());
             throw e;
@@ -87,7 +92,17 @@ public class FilmDbStorage implements FilmStorage{
     @Override
     public Collection<Film> getFilms() {
         String query = "SELECT  id, name, description, release_date, duration, rating_id FROM films";
-        return jdbc.query(query, new FilmRowMapper());
+        List<Film> films = jdbc.query(query, new FilmRowMapper()).stream()
+                .map(film -> {
+                    film.setLikes(getFilmLikes(film.getId()));
+                    return film;
+                })
+                .map(film -> {
+                    film.setGenres(getFilmGenres(film.getId()));
+                    return film;
+                })
+                .toList();
+         return films;
     }
 
     @Override
@@ -98,9 +113,33 @@ public class FilmDbStorage implements FilmStorage{
         String query = "SELECT id, name, description, release_date, duration, rating_id FROM films WHERE id = ?";
         try {
             Film result = jdbc.queryForObject(query, new FilmRowMapper(), id);
+            if (result != null) {
+                result.setLikes(getFilmLikes(id));
+                result.setGenres(getFilmGenres(id));
+            }
             return result;
         } catch (EmptyResultDataAccessException ignored) {
             throw new NotFoundException("Не найден фильм с идентификатором " + id);
         }
+    }
+
+    /** Метод возвращает список идентификаторов пользователей поставивших лайк фильму
+     * @param filmId идентификатор фильма
+     * @return набор идентификаторов пользователей
+     */
+    private Set<Long> getFilmLikes(Long filmId) {
+        String query = "SELECT user_id FROM likes WHERE film_id = ?";
+        List<Long> friendsList = jdbc.queryForList(query, Long.class, filmId);
+        return new HashSet<>(friendsList);
+    }
+
+    /** Метод возвращает список идентификаторов жанров у фильма
+     * @param filmId идентификатор фильма
+     * @return набор идентификаторов жанров
+     */
+    private Set<Long> getFilmGenres(Long filmId) {
+        String query = "SELECT genre_id FROM film_genres WHERE film_id = ?";
+        List<Long> genreList = jdbc.queryForList(query, Long.class, filmId);
+        return new HashSet<>(genreList);
     }
 }

@@ -10,14 +10,15 @@ import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.mappers.FilmRowMapper;
 import ru.yandex.practicum.filmorate.storage.user.mappers.UserRowMapper;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Component("userDbStorage")
@@ -86,7 +87,14 @@ public class UserDbStorage implements UserStorage{
     @Override
     public Collection<User> getUsers() {
         String query = "SELECT id, email, login, name, birthday FROM users";
-        return jdbc.query(query, new UserRowMapper());
+        List<User> users = jdbc.query(query, new UserRowMapper()).stream()
+                .map(user -> {
+                                    user.setFriends(getUserFriends(user.getId()));
+                                    return user;
+                                    })
+                .toList();
+
+        return users;
     }
 
     @Override
@@ -97,9 +105,22 @@ public class UserDbStorage implements UserStorage{
         String query = "SELECT id, email, login, name, birthday FROM users WHERE id = ?";
         try {
             User result = jdbc.queryForObject(query, new UserRowMapper(), id);
+            if (result != null) {
+                result.setFriends(getUserFriends(id));
+            }
             return result;
         } catch (EmptyResultDataAccessException ignored) {
-            throw new NotFoundException("Не найден фильм с идентификатором " + id);
+            throw new NotFoundException("Не найден пользователь с идентификатором " + id);
         }
+    }
+
+    /** Метод возвращает список идентификаторов друзей у пользователя
+     * @param userId идентификатор пользователя
+     * @return набор идентификаторов друзей у пользователя
+     */
+    private Set<Long> getUserFriends(Long userId) {
+        String query = "SELECT friend_id FROM friends WHERE user_id = ?";
+        List<Long> friendsList = jdbc.queryForList(query, Long.class, userId);
+        return new HashSet<>(friendsList);
     }
 }
