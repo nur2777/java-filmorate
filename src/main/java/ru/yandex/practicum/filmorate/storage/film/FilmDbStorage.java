@@ -23,16 +23,16 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Component("filmDbStorage")
 @Slf4j
-public class FilmDbStorage implements FilmStorage{
+public class FilmDbStorage implements FilmStorage {
 
     protected final JdbcTemplate jdbc;
 
     @Override
     public Film addNewFilm(Film newFilm) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        String insert_query = "INSERT INTO films(name, description, release_date, duration, rating_id) VALUES (?, ?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO films(name, description, release_date, duration, rating_id) VALUES (?, ?, ?, ?, ?)";
         jdbc.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insert_query, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1,newFilm.getName());
             ps.setString(2,newFilm.getDescription());
             ps.setDate(3, Date.valueOf(newFilm.getReleaseDate()));
@@ -55,9 +55,9 @@ public class FilmDbStorage implements FilmStorage{
             if (film.getId() == null) {
                 throw new ValidationException("Не указан идентификатор фильма");
             }
-            String update_query = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, " +
+            String updateQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, " +
                     "rating_id = ? WHERE id = ?";
-            int rowsUpdated = jdbc.update(update_query, film.getName(),
+            int rowsUpdated = jdbc.update(updateQuery, film.getName(),
                     film.getDescription(),
                     film.getReleaseDate(),
                     film.getDuration(),
@@ -80,8 +80,8 @@ public class FilmDbStorage implements FilmStorage{
         if (id == null) {
             throw new ValidationException("Не указан идентификатор фильма");
         }
-        String delete_query = "DELETE FROM films WHERE id = ?";
-        int rowsDeleted = jdbc.update(delete_query, id);
+        String deleteQuery = "DELETE FROM films WHERE id = ?";
+        int rowsDeleted = jdbc.update(deleteQuery, id);
         if (rowsDeleted == 0) {
             throw new NotFoundException("Не удалось удалить данные. Не найден фильм с идентификатором " + id);
         } else {

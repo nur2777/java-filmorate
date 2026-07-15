@@ -23,16 +23,16 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Component("userDbStorage")
 @Slf4j
-public class UserDbStorage implements UserStorage{
+public class UserDbStorage implements UserStorage {
 
     protected final JdbcTemplate jdbc;
 
     @Override
     public User addNewUser(User newUser) {
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        String insert_query = "INSERT INTO users (name, email, birthday, login) VALUES (?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO users (name, email, birthday, login) VALUES (?, ?, ?, ?)";
         jdbc.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(insert_query, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1,newUser.getName());
             ps.setString(2,newUser.getEmail());
             ps.setDate(3, Date.valueOf(newUser.getBirthday()));
@@ -53,8 +53,8 @@ public class UserDbStorage implements UserStorage{
             if (user.getId() == null) {
                 throw new ValidationException("Не указан идентификатор пользователя");
             }
-            String update_query = "UPDATE users SET name = ?, email = ?, birthday = ?, login = ? WHERE id = ?";
-            int rowsUpdated = jdbc.update(update_query, user.getName(),
+            String updateQuery = "UPDATE users SET name = ?, email = ?, birthday = ?, login = ? WHERE id = ?";
+            int rowsUpdated = jdbc.update(updateQuery, user.getName(),
                     user.getEmail(),
                     user.getBirthday(),
                     user.getLogin(),
@@ -75,8 +75,8 @@ public class UserDbStorage implements UserStorage{
         if (id == null) {
             throw new ValidationException("Не указан идентификатор пользователя");
         }
-        String delete_query = "DELETE FROM users WHERE id = ?";
-        int rowsDeleted = jdbc.update(delete_query, id);
+        String deleteQuery = "DELETE FROM users WHERE id = ?";
+        int rowsDeleted = jdbc.update(deleteQuery, id);
         if (rowsDeleted == 0) {
             throw new NotFoundException("Не удалось удалить данные. Не найден пользователь с идентификатором " + id);
         } else {
