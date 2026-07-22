@@ -15,7 +15,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 .description(rs.getString("description"))
                 .releaseDate(rs.getDate("release_date").toLocalDate())
                 .duration(rs.getInt("duration"))
-                .ratingId(rs.getLong("rating_id"))
+                .ratingId(rs.getObject("rating_id", Long.class))
                 .build();
         return film;
     }

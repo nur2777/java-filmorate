@@ -37,13 +37,4 @@ public class GenreDbStorage {
             throw new NotFoundException("Не найден жанр с идентификатором " + id);
         }
     }
-
-    public void addGenreToFilm(Long filmId, Long genreId) {
-        String insert = """
-                        INSERT INTO film_genres (film_id, genre_id)
-                        VALUES (?, ?)
-                        """;
-        jdbc.update(insert, filmId, genreId);
-    }
-
 }

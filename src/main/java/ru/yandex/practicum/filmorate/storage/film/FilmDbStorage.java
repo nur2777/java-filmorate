@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.mappers.FilmRowMapper;
-import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -26,7 +25,6 @@ import java.util.Set;
 @Component("filmDbStorage")
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
-    private final GenreDbStorage genreDbStorage;
 
     protected final JdbcTemplate jdbc;
 
@@ -53,7 +51,7 @@ public class FilmDbStorage implements FilmStorage {
 
         if (newFilm.getGenres() != null && !newFilm.getGenres().isEmpty()) {
             for (Long genreId: newFilm.getGenres().stream().toList()) {
-                genreDbStorage.addGenreToFilm(Long.valueOf(id),genreId);
+                addGenreToFilm(Long.valueOf(id),genreId);
             }
         } else {
             log.warn("Фильм id = {} не имеет жанров", id);
@@ -213,5 +211,13 @@ public class FilmDbStorage implements FilmStorage {
         String query = "SELECT genre_id FROM film_genres WHERE film_id = ?";
         List<Long> genreList = jdbc.queryForList(query, Long.class, filmId);
         return new HashSet<>(genreList);
+    }
+
+    private void addGenreToFilm(Long filmId, Long genreId) {
+        String insert = """
+                        INSERT INTO film_genres (film_id, genre_id)
+                        VALUES (?, ?)
+                        """;
+        jdbc.update(insert, filmId, genreId);
     }
 }
