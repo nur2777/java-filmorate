@@ -48,7 +48,7 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public FilmDTO getFilm(Long filmId) {
         FilmDTO filmDTO = FilmMapper.mapFilmtoFilmDTO(filmStorage.getFilm(filmId));
-        if (filmDTO.getMpa().getId() != null) {
+        if (filmDTO.getMpa() != null) {
             filmDTO.setMpa(Mpa.builder()
                     .id(filmDTO.getMpa().getId())
                     .name(mpaDbStorage.getMpaRating(filmDTO.getMpa().getId()).getName())

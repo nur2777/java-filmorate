@@ -21,7 +21,7 @@ public final class FilmMapper {
             genres = filmDTO.getGenres().stream().map(Genre::getId).collect(Collectors.toSet());
         }
         Long ratingId = null;
-        if (filmDTO.getMpa().getId() != null) {
+        if (filmDTO.getMpa() != null) {
             ratingId = filmDTO.getMpa().getId();
         }
 
