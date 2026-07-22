@@ -17,8 +17,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,13 +25,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @JdbcTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({UserDbStorage.class,FilmDbStorage.class,GenreDbStorage.class})
+@Import({UserDbStorage.class,FilmDbStorage.class})
 class FilmoRateFilmDbStrorageTests {
 
     @Autowired
     private FilmDbStorage filmStorage;
-    @Autowired
-    private GenreDbStorage genreDbStorage;
     @Autowired
     private UserDbStorage userStorage;
 
@@ -300,7 +296,7 @@ class FilmoRateFilmDbStrorageTests {
         boolean result = filmStorage.dislike(filmStorage.getFilm(savedFilm.getId()), savedUser.getId());
 
         assertThat(result)
-                .withFailMessage("Метод должен вернуть true при успешном удалении лайка "+result)
+                .withFailMessage("Метод должен вернуть true при успешном удалении лайка " + result)
                 .isTrue();
 
         Film filmWithoutLikes = filmStorage.getFilm(savedFilm.getId());
