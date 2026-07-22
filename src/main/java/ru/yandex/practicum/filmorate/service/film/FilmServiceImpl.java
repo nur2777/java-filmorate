@@ -48,10 +48,12 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public FilmDTO getFilm(Long filmId) {
         FilmDTO filmDTO = FilmMapper.mapFilmtoFilmDTO(filmStorage.getFilm(filmId));
-        filmDTO.setMpa(Mpa.builder()
-                        .id(filmDTO.getMpa().getId())
-                        .name(mpaDbStorage.getMpaRating(filmDTO.getMpa().getId()).getName())
-                        .build());
+        if (filmDTO.getMpa().getId() != null) {
+            filmDTO.setMpa(Mpa.builder()
+                    .id(filmDTO.getMpa().getId())
+                    .name(mpaDbStorage.getMpaRating(filmDTO.getMpa().getId()).getName())
+                    .build());
+        }
         for (Genre genre : filmDTO.getGenres()) {
             genre.setName(genreDbStorage.getGenre(genre.getId()).getName());
         }
