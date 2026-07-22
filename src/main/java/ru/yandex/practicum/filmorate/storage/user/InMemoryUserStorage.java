@@ -17,11 +17,6 @@ public class InMemoryUserStorage implements UserStorage {
      */
     private final Map<Long, User> users = new HashMap<>();
 
-    /**
-     * Вспомогательный метод для генерации идентификатора пользователя
-     *
-     * @return новый идентификатор пользователя
-     */
     private long getNextUserId() {
         long currentUserId = users.keySet()
                 .stream()
@@ -31,10 +26,6 @@ public class InMemoryUserStorage implements UserStorage {
         return ++currentUserId;
     }
 
-    /** Метод добавления нового пользователя
-     * @param newUser данные нового пользователя
-     * @return объект с добавленным пользователем
-     */
     public User addNewUser(User newUser) {
         try {
             newUser.setId(getNextUserId());
@@ -48,10 +39,6 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
-    /** Метод обновления данных о пользователе
-     * @param user данные для обновления
-     * @return обновлённый объект пользолвателя
-     */
     public User updateUser(User user) {
         try {
             if (user.getId() == null) {
@@ -73,25 +60,16 @@ public class InMemoryUserStorage implements UserStorage {
         }
     }
 
-    /** Метод удаляет пользователя по идентификатору
-     * @param id идентификатор пользователя
-     */
     @Override
     public void deleteUser(Long id) {
         log.info("Выполняется удаление пользователя!");
     }
 
-    /** Метод возвращает список всех пользователей
-     * @return список пользователей
-     */
     @Override
     public Collection<User> getUsers() {
         return users.values();
     }
 
-    /** Метод проверки существования и получения одного пользователя по идентификатору
-     * @return объект пользователя
-     */
     @Override
     public User getUser(Long id) {
         if (id == null) {
@@ -101,6 +79,16 @@ public class InMemoryUserStorage implements UserStorage {
             return users.get(id);
         }
         throw new NotFoundException("Не найден пользователь с идентификатором " + id);
+    }
+
+    @Override
+    public boolean addNewFriend(User user, Long newFriendId) {
+        return user.getFriends().add(newFriendId);
+    }
+
+    @Override
+    public boolean unfriend(User user, Long removeFriendId) {
+        return user.getFriends().remove(removeFriendId);
     }
 
 }

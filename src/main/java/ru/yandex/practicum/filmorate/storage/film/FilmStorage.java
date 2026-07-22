@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
+
 import java.util.Collection;
 
 /**
@@ -34,4 +35,18 @@ public interface FilmStorage {
      * @return объект фильма
      */
     Film getFilm(Long id);
+
+    /** Метод добавления лайка
+     * @param film фильм, которому добавляется лайк
+     * @param userId идентификатор пользователя поставившего лайк
+     * @return true - если успешно добавлен, false - если лайк уже существует для фильма
+     */
+    boolean addLike(Film film, Long userId);
+
+    /** Метод удаления лайка
+     * @param film фильм, у которого удаляется лайк
+     * @param userId идентификатор пользователя у которого лайк удаляется
+     * @return true - если успешно удалён, false - если лайка не существует
+     */
+    boolean dislike(Film film, Long userId);
 }

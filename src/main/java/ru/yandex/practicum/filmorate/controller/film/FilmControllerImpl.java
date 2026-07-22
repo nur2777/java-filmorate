@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDTO;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmServiceImpl;
 
@@ -28,19 +29,19 @@ public class FilmControllerImpl implements FilmController {
 
     @PostMapping
     @Override
-    public Film add(@Valid @RequestBody Film newFilm) {
+    public FilmDTO add(@Valid @RequestBody FilmDTO newFilm) {
         return filmService.addNewFilm(newFilm);
     }
 
     @PutMapping
     @Override
-    public Film update(@Valid @RequestBody Film film) {
+    public FilmDTO update(@Valid @RequestBody FilmDTO film) {
         return filmService.updateFilm(film);
     }
 
     @GetMapping("/{id}")
     @Override
-    public Film getFilm(@Valid @PathVariable Long id) {
+    public FilmDTO getFilm(@Valid @PathVariable Long id) {
         return filmService.getFilm(id);
     }
 

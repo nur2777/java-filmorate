@@ -34,10 +34,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return ++currentFilmId;
     }
 
-    /** Метод с логикой добавления нового фильма
-     * @param newFilm данные нового фильма
-     * @return объект фильма
-     */
     @Override
     public Film addNewFilm(Film newFilm) {
         try {
@@ -52,10 +48,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
-    /** Метод обновления данных о фильме
-     * @param film обновленные данные о фильме
-     * @return обновлённый объект фильма
-     */
     @Override
     public Film updateFilm(Film film) {
         try {
@@ -78,25 +70,16 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
-    /** Метод удаляет фильм по идентификатору
-     * @param id идентификатор фильма
-     */
     @Override
     public void deleteFilm(Long id) {
         log.info("Выполняется удаление фильма!");
     }
 
-    /** Метод возвращает список всех фильмов
-     * @return список фильмов
-     */
     @Override
     public Collection<Film> getFilms() {
         return films.values();
     }
 
-    /** Метод проверки существования и получения одного фильма по идентификатору
-     * @return объект фильма
-     */
     @Override
     public Film getFilm(Long id) {
         if (id == null) {
@@ -106,5 +89,15 @@ public class InMemoryFilmStorage implements FilmStorage {
             return films.get(id);
         }
         throw new NotFoundException("Не найден фильм с идентификатором " + id);
+    }
+
+    @Override
+    public boolean addLike(Film film, Long userId) {
+        return film.getLikes().add(userId);
+    }
+
+    @Override
+    public boolean dislike(Film film, Long userId) {
+        return film.getLikes().remove(userId);
     }
 }

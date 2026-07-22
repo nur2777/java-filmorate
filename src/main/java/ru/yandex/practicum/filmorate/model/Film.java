@@ -21,11 +21,11 @@ public class Film {
     /**
      * Дата самого раннего фильма
      */
-    private static final String MIN_RELEASE_DATE = "28.12.1895";
+    public static final String MIN_RELEASE_DATE = "28.12.1895";
     /**
      * Формат даты
      */
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     /**
      * Идентификатор фильма
      */

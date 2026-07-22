@@ -114,6 +114,52 @@ public class UserDbStorage implements UserStorage {
         }
     }
 
+    @Override
+    public boolean addNewFriend(User user, Long newFriendId) {
+        if (newFriendId == null) {
+            throw new ValidationException("Не указан идентификатор нового друга");
+        }
+        if (user.getFriends().contains(newFriendId)) {
+            log.info("Друг c id={} уже добавлен в друзья.",newFriendId);
+            return false;
+        } else {
+            String insert = """
+                    INSERT INTO friends (user_id, friend_id)
+                    VALUES (?, ?)
+                    """;
+            int rowsInserted = jdbc.update(insert, user.getId(), newFriendId);
+            if (rowsInserted == 0) {
+                throw new InternalServerException("Не удалось вставить данные в таблицу friends");
+            } else {
+                log.info("Друг c id={} успешно добавлен в друзья.", newFriendId);
+                return true;
+            }
+        }
+    }
+
+    @Override
+    public boolean unfriend(User user, Long removeFriendId) {
+        if (removeFriendId == null) {
+            throw new ValidationException("Не указан идентификатор удаляемого друга");
+        }
+        if (!user.getFriends().contains(removeFriendId)) {
+            log.info("Друг c id={} не существует в друзьях у пользователя.",removeFriendId);
+            return false;
+        } else {
+            String deleteQuery = """
+                    DELETE from friends
+                    WHERE user_id = ? and friend_id = ?
+                    """;
+            int rowsDeleted = jdbc.update(deleteQuery, user.getId(), removeFriendId);
+            if (rowsDeleted == 0) {
+                throw new NotFoundException("Не удалось удалить данные. Не найден пользователь с идентификатором " + user.getId() + " и его друг с friend_id " + removeFriendId);
+            } else {
+                log.info("Друг успешно удален.");
+                return true;
+            }
+        }
+    }
+
     /** Метод возвращает список идентификаторов друзей у пользователя
      * @param userId идентификатор пользователя
      * @return набор идентификаторов друзей у пользователя

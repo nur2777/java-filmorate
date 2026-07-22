@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.mappers.FilmRowMapper;
+import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -24,11 +25,13 @@ import java.util.Set;
 @Component("filmDbStorage")
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
+    private final GenreDbStorage genreDbStorage;
 
     protected final JdbcTemplate jdbc;
 
     @Override
     public Film addNewFilm(Film newFilm) {
+
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         String insertQuery = "INSERT INTO films(name, description, release_date, duration, rating_id) VALUES (?, ?, ?, ?, ?)";
         jdbc.update(connection -> {
@@ -41,12 +44,20 @@ public class FilmDbStorage implements FilmStorage {
             return ps;
             }, keyHolder);
         Integer id = keyHolder.getKeyAs(Integer.class);
+
+        if (newFilm.getGenres() != null && !newFilm.getGenres().isEmpty()) {
+            for (Long genreId: newFilm.getGenres().stream().toList()) {
+                genreDbStorage.addGenreToFilm(Long.valueOf(id),genreId);
+            }
+        } else {
+            log.warn("Фильм id = {} не имеет жанров", id);
+        }
+
         if (id != null) {
             return getFilm(Long.valueOf(id));
         } else {
             throw new InternalServerException("Не удалось сохранить данные");
         }
-        //TODO реализовать вставку списка жанров
     }
 
     @Override
@@ -64,7 +75,8 @@ public class FilmDbStorage implements FilmStorage {
                     film.getRatingId(),
                     film.getId());
             if (rowsUpdated == 0) {
-                throw new NotFoundException("Не удалось обновить данные. Не найден фильм с идентификатором " + film.getId());
+                throw new NotFoundException("Не удалось обновить данные. Не найден фильм с идентификатором "
+                        + film.getId());
             } else {
                 return getFilm(film.getId());
             }
@@ -120,6 +132,53 @@ public class FilmDbStorage implements FilmStorage {
             return result;
         } catch (EmptyResultDataAccessException ignored) {
             throw new NotFoundException("Не найден фильм с идентификатором " + id);
+        }
+    }
+
+    @Override
+    public boolean addLike(Film film, Long userId) {
+        if (userId == null) {
+            throw new ValidationException("Не указан идентификатор пользователя");
+        }
+        if (film.getLikes().contains(userId)) {
+            log.info("Пользователь c id={} уже поставил лайк этому фильму.",userId);
+            return false;
+        } else {
+            String insert = """
+                    INSERT INTO likes (film_id, user_id)
+                    VALUES (?, ?)
+                    """;
+            int rowsInserted = jdbc.update(insert, film.getId(), userId);
+            if (rowsInserted == 0) {
+                throw new InternalServerException("Не удалось вставить данные в таблицу likes");
+            } else {
+                log.info("Пользователь c id={} успешно поставил лайк фильму", userId);
+                return true;
+            }
+        }
+    }
+
+    @Override
+    public boolean dislike(Film film, Long userId) {
+        if (userId == null) {
+            throw new ValidationException("Не указан идентификатор пользователя лайк которого удаляется");
+        }
+        if (!film.getLikes().contains(userId)) {
+            log.info("Пользователь c id={} не ставил лайк этому фильму.",userId);
+            return false;
+        } else {
+            String deleteQuery = """
+                    DELETE from likes
+                    WHERE film_id = ? and user_id = ?
+                    """;
+            int rowsDeleted = jdbc.update(deleteQuery, film.getId(), userId);
+            if (rowsDeleted == 0) {
+                throw new NotFoundException("Не удалось удалить данные. Не найден фильм с идентификатором " +
+                        film.getId() + " и лайк от пользователя с user_id " + userId);
+            } else {
+                log.info("Лайк успешно удален.");
+                return true;
+            }
         }
     }
 

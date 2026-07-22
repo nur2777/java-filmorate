@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         User user = userStorage.getUser(userId);
         log.trace("Проверяем существование и получаем объект друга");
         User friend = userStorage.getUser(newFriendId);
-        if (user.getFriends().add(newFriendId)) {
+        if (userStorage.addNewFriend(user,newFriendId)) {
             log.trace("Новый друг к пользователю успешно добавлен");
         } else {
             log.warn("Друг с id {} уже является другом пользователю.", newFriendId);
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         User user = userStorage.getUser(userId);
         log.trace("Проверяем существование и получаем объект друга");
         User friend = userStorage.getUser(friendId);
-        if (user.getFriends().remove(friendId)) {
+        if (userStorage.unfriend(user,friendId)) {
             log.trace("Друг удален из списка друзей пользователя успешно");
         } else {
             log.warn("Друг с id {} не является другом пользователю.", friendId);
