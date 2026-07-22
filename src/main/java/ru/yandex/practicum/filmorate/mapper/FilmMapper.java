@@ -20,6 +20,10 @@ public final class FilmMapper {
         if (filmDTO.getGenres() != null) {
             genres = filmDTO.getGenres().stream().map(Genre::getId).collect(Collectors.toSet());
         }
+        Long ratingId = null;
+        if (filmDTO.getMpa().getId() != null) {
+            ratingId = filmDTO.getMpa().getId();
+        }
 
         Film film = Film.builder()
                 .id(filmDTO.getId())
@@ -27,7 +31,7 @@ public final class FilmMapper {
                 .description(filmDTO.getDescription())
                 .releaseDate(filmDTO.getReleaseDate())
                 .duration(filmDTO.getDuration())
-                .ratingId(filmDTO.getMpa().getId())
+                .ratingId(ratingId)
                 .genres(genres)
                 .build();
         return film;
