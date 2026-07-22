@@ -68,7 +68,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     private void checkFields(Film film) {
-        if (film.getName() == null || film.getName().isEmpty()) {
+        if (film.getName() == null || film.getName().isEmpty() || film.getName().isBlank()) {
             throw new ValidationException("Название фильма не может быть пустым");
         }
         if (film.getDescription().length() > 200) {
