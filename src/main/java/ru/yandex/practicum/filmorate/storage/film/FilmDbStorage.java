@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +41,12 @@ public class FilmDbStorage implements FilmStorage {
             ps.setString(2,newFilm.getDescription());
             ps.setDate(3, Date.valueOf(newFilm.getReleaseDate()));
             ps.setInt(4, newFilm.getDuration());
-            ps.setLong(5, newFilm.getRatingId());
+            // Используем setObject, который допускает null
+            if (newFilm.getRatingId() != null) {
+                ps.setLong(5, newFilm.getRatingId());
+            } else {
+                ps.setNull(5, Types.BIGINT);
+            }
             return ps;
             }, keyHolder);
         Integer id = keyHolder.getKeyAs(Integer.class);
@@ -68,19 +74,26 @@ public class FilmDbStorage implements FilmStorage {
             }
             String updateQuery = "UPDATE films SET name = ?, description = ?, release_date = ?, duration = ?, " +
                     "rating_id = ? WHERE id = ?";
-            int rowsUpdated = jdbc.update(updateQuery, film.getName(),
-                    film.getDescription(),
-                    film.getReleaseDate(),
-                    film.getDuration(),
-                    film.getRatingId(),
-                    film.getId());
+            int rowsUpdated = jdbc.update(connection -> {
+                PreparedStatement ps = connection.prepareStatement(updateQuery);
+                ps.setString(1, film.getName());
+                ps.setString(2, film.getDescription());
+                ps.setDate(3, Date.valueOf(film.getReleaseDate()));
+                ps.setInt(4, film.getDuration());
+                if (film.getRatingId() != null) {
+                    ps.setLong(5, film.getRatingId());
+                } else {
+                    ps.setNull(5, Types.BIGINT);
+                }
+                ps.setLong(6, film.getId());
+                return ps;
+            });
             if (rowsUpdated == 0) {
                 throw new NotFoundException("Не удалось обновить данные. Не найден фильм с идентификатором "
                         + film.getId());
             } else {
                 return getFilm(film.getId());
             }
-            //TODO реализовать обновление списка жанров
         } catch (ValidationException | NotFoundException e) {
             log.warn(e.getMessage());
             throw e;
