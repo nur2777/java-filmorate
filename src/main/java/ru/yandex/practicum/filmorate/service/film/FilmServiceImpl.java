@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.constants.Qualifiers;
 import ru.yandex.practicum.filmorate.dto.FilmDTO;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -16,14 +16,11 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreDbStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.model.Film.MIN_RELEASE_DATE;
-import static ru.yandex.practicum.filmorate.model.Film.dtf;
 
 @Service
 @Slf4j
@@ -35,10 +32,10 @@ public class FilmServiceImpl implements FilmService {
     private final GenreDbStorage genreDbStorage;
 
     @Autowired
-    public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                           @Qualifier("userDbStorage") UserStorage userStorage,
-                           @Qualifier("mpaDbStorage") MpaDbStorage mpaDbStorage,
-                           @Qualifier("genreDbStorage") GenreDbStorage genreDbStorage) {
+    public FilmServiceImpl(@Qualifier(Qualifiers.FILM) FilmStorage filmStorage,
+                           @Qualifier(Qualifiers.USER) UserStorage userStorage,
+                           @Qualifier(Qualifiers.MPA) MpaDbStorage mpaDbStorage,
+                           @Qualifier(Qualifiers.GENRE) GenreDbStorage genreDbStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.mpaDbStorage = mpaDbStorage;
@@ -63,23 +60,6 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public FilmDTO addNewFilm(FilmDTO newFilm) {
         Film film = FilmMapper.mapFilmDTOToFilm(newFilm);
-        checkFields(film);
-        return FilmMapper.mapFilmtoFilmDTO(filmStorage.addNewFilm(film));
-    }
-
-    private void checkFields(Film film) {
-        if (film.getName() == null || film.getName().isEmpty() || film.getName().isBlank()) {
-            throw new ValidationException("Название фильма не может быть пустым");
-        }
-        if (film.getDescription().length() > 200) {
-            throw new ValidationException("Длина описания должна быть максимум 200 символов");
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.parse(MIN_RELEASE_DATE,dtf))) {
-            throw new ValidationException("Дата релиза должна быть не ранее " + MIN_RELEASE_DATE);
-        }
-        if (film.getDuration() < 0) {
-            throw new ValidationException("Продолжительность фильма должна быть положительным числом");
-        }
         if (film.getRatingId() != null) {
             Mpa mpa = mpaDbStorage.getMpaRating(film.getRatingId());
         }
@@ -88,12 +68,20 @@ public class FilmServiceImpl implements FilmService {
                     .map(genreDbStorage::getGenre)
                     .toList();
         }
+        return FilmMapper.mapFilmtoFilmDTO(filmStorage.addNewFilm(film));
     }
 
     @Override
     public FilmDTO updateFilm(FilmDTO filmDto) {
         Film film = FilmMapper.mapFilmDTOToFilm(filmDto);
-        checkFields(film);
+        if (film.getRatingId() != null) {
+            Mpa mpa = mpaDbStorage.getMpaRating(film.getRatingId());
+        }
+        if (film.getGenres() != null) {
+            List<Genre> genreList = film.getGenres().stream()
+                    .map(genreDbStorage::getGenre)
+                    .toList();
+        }
         return FilmMapper.mapFilmtoFilmDTO(filmStorage.updateFilm(film));
     }
 

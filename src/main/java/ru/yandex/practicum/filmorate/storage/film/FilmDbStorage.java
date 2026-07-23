@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.constants.Qualifiers;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
-@Component("filmDbStorage")
+@Component(Qualifiers.FILM)
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
 
@@ -50,9 +51,7 @@ public class FilmDbStorage implements FilmStorage {
         Integer id = keyHolder.getKeyAs(Integer.class);
 
         if (newFilm.getGenres() != null && !newFilm.getGenres().isEmpty()) {
-            for (Long genreId: newFilm.getGenres().stream().toList()) {
-                addGenreToFilm(Long.valueOf(id),genreId);
-            }
+                addGenresToFilm(newFilm.getGenres(),Long.valueOf(id));
         } else {
             log.warn("Фильм id = {} не имеет жанров", id);
         }
@@ -213,11 +212,11 @@ public class FilmDbStorage implements FilmStorage {
         return new HashSet<>(genreList);
     }
 
-    private void addGenreToFilm(Long filmId, Long genreId) {
-        String insert = """
-                        INSERT INTO film_genres (film_id, genre_id)
-                        VALUES (?, ?)
-                        """;
-        jdbc.update(insert, filmId, genreId);
+    private void addGenresToFilm(Set<Long> genres, Long filmId) {
+        String insert = "INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)";
+        List<Object[]> batchArgs = genres.stream()
+                .map(genreId -> new Object[]{filmId, genreId})
+                .toList();
+        jdbc.batchUpdate(insert, batchArgs);
     }
 }

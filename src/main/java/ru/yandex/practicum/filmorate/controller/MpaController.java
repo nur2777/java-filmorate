@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.dto.DirectoryDTO;
 import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.Collection;
@@ -26,12 +26,12 @@ public class MpaController {
     }
 
     @GetMapping("/{id}")
-    public Mpa getMpaRating(@Valid @PathVariable Long id) {
+    public DirectoryDTO getMpaRating(@Valid @PathVariable Long id) {
         return mpaService.getMpaRating(id);
     }
 
     @GetMapping
-    public Collection<Mpa> getAllRatings() {
+    public Collection<DirectoryDTO> getAllRatings() {
         return mpaService.getMpaRatings();
     }
 }

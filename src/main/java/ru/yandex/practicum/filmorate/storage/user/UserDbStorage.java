@@ -6,6 +6,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.constants.Qualifiers;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
-@Component("userDbStorage")
+@Component(Qualifiers.USER)
 @Slf4j
 public class UserDbStorage implements UserStorage {
 

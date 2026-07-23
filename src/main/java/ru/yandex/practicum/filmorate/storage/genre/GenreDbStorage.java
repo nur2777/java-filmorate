@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.constants.Qualifiers;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -13,7 +14,7 @@ import ru.yandex.practicum.filmorate.storage.genre.mappers.GenreRowMapper;
 import java.util.*;
 
 @RequiredArgsConstructor
-@Component("genreDbStorage")
+@Component(Qualifiers.GENRE)
 @Slf4j
 public class GenreDbStorage {
 

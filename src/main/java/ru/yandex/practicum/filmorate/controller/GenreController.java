@@ -4,11 +4,9 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.dto.DirectoryDTO;
 import ru.yandex.practicum.filmorate.service.GenreService;
-
 import java.util.Collection;
-
 
 @RestController
 @RequestMapping("/genres")
@@ -23,12 +21,12 @@ public class GenreController {
     }
 
     @GetMapping("/{id}")
-    public Genre getGenre(@Valid @PathVariable Long id) {
+    public DirectoryDTO getGenre(@Valid @PathVariable Long id) {
         return genreService.getGenre(id);
     }
 
     @GetMapping
-    public Collection<Genre> getAllFilms() {
+    public Collection<DirectoryDTO> getAllFilms() {
         return genreService.getGenres();
     }
 }
