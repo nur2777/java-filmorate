@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service.film;
 
+import ru.yandex.practicum.filmorate.dto.FilmDTO;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -14,21 +15,21 @@ public interface FilmService {
      * @param filmId идентификатор фильма
      * @return объект фильма
      */
-    Film getFilm(Long filmId);
+    FilmDTO getFilm(Long filmId);
 
     /**
      * Метод добавления фильма
      * @param newFilm новый фильм
      * @return объект добавленного фильма
      */
-    Film addNewFilm(Film newFilm);
+    FilmDTO addNewFilm(FilmDTO newFilm);
 
     /**
      * Метод обновления фильма
      * @param film новые данные для обновления
      * @return объект обновленного фильма
      */
-    Film updateFilm(Film film);
+    FilmDTO updateFilm(FilmDTO film);
 
     /**
      * Метод получения списка всех фильмов

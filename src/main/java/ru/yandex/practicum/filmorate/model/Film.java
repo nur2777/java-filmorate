@@ -21,11 +21,11 @@ public class Film {
     /**
      * Дата самого раннего фильма
      */
-    private static final String MIN_RELEASE_DATE = "28.12.1895";
+    public static final String MIN_RELEASE_DATE = "28.12.1895";
     /**
      * Формат даты
      */
-    private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    public static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     /**
      * Идентификатор фильма
      */
@@ -55,4 +55,12 @@ public class Film {
      * Список идентификаторов пользователей поставивших лайк фильму
      */
     private Set<Long> likes;
+    /**
+     * Список идентификаторов жанров у фильма
+     */
+    private Set<Long> genres;
+    /**
+     * Возрастное ограничение для фильма, идентификатор рейтинга
+     */
+    private Long ratingId;
 }

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller.film;
 
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDTO;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -15,7 +16,7 @@ public interface FilmController {
      * @param newFilm новый фильм
      * @return объект добавленного фильма
      */
-    Film add(Film newFilm);
+    FilmDTO add(FilmDTO newFilm);
 
     /**
      * Эндпоинт на обновление фильма
@@ -23,7 +24,7 @@ public interface FilmController {
      * @param film новые данные для обновления
      * @return объект обновленного фильма
      */
-    Film update(Film film);
+    FilmDTO update(FilmDTO film);
 
     /**
      * Эндпоинт получения конкретного фильма
@@ -31,7 +32,7 @@ public interface FilmController {
      * @param id идентификатор фильма
      * @return объект фильма
      */
-    Film getFilm(Long id);
+    FilmDTO getFilm(Long id);
 
     /**
      * Эндпоинт получения списка всех фильмов

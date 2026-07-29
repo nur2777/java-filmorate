@@ -34,4 +34,17 @@ public interface UserStorage {
      */
     User getUser(Long id);
 
+    /** Метод добавления друга
+     * @param user данные пользователя к которому в друзья добавляется друг
+     * @param newFriendId идентификатор добавляемого друга
+     * @return true - если успешно добавлен, false - если друг уже существует в списке друзей
+     */
+    boolean addNewFriend(User user,Long newFriendId);
+
+    /** Метод удаления друга
+     * @param user данные пользователя у которого исключается друг
+     * @param removeFriendId идентификатор удаляемого друга
+     * @return true - если успешно исключен, false - если друга не существует в списке друзей
+     */
+    boolean unfriend(User user,Long removeFriendId);
 }
